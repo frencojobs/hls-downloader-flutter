@@ -15,7 +15,7 @@ dependencies:
   http: ^0.12.1
   path: ^1.6.0
   hive: ^1.4.1+1
-  chewie: ^0.9.10
+  # chewie: ^0.9.10
   pedantic: ^1.8.0
   typeweight: ^0.0.2
   hive_flutter: ^0.3.0+2

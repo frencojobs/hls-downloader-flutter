@@ -31,6 +31,7 @@ class Mainframe extends StatelessWidget {
       theme: ThemeData(
         fontFamily: GoogleFonts.workSans().fontFamily,
         primaryColor: Colors.black,
+        accentColor: Colors.black,
         splashFactory: InkRipple.splashFactory,
       ),
       initialRoute: '/',

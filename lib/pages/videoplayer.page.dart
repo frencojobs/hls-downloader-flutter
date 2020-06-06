@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
+// import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:typeweight/typeweight.dart';
@@ -17,19 +17,19 @@ class VideoPlayerPage extends StatefulWidget {
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   VideoPlayerController _videoPlayerController;
-  ChewieController _chewieController;
+  // ChewieController _chewieController;
   Future<void> _future;
 
   Future<void> initVideoPlayer() async {
     await _videoPlayerController.initialize();
     setState(() {
       print(_videoPlayerController.value.aspectRatio);
-      _chewieController = ChewieController(
-        videoPlayerController: _videoPlayerController,
-        aspectRatio: _videoPlayerController.value.aspectRatio,
-        autoPlay: false,
-        looping: false,
-      );
+      // _chewieController = ChewieController(
+      //   videoPlayerController: _videoPlayerController,
+      //   aspectRatio: _videoPlayerController.value.aspectRatio,
+      //   autoPlay: false,
+      //   looping: false,
+      // );
     });
   }
 
@@ -44,7 +44,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   void dispose() {
     _videoPlayerController.dispose();
-    _chewieController.dispose();
+    // _chewieController.dispose();
     super.dispose();
   }
 
@@ -66,15 +66,32 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             if (_videoPlayerController.value.initialized) {
               return AspectRatio(
                 aspectRatio: _videoPlayerController.value.aspectRatio,
-                child: Chewie(
-                  controller: _chewieController,
-                ),
+                child: VideoPlayer(_videoPlayerController),
               );
             } else {
               return CircularProgressIndicator();
             }
           },
         ),
+      ),
+      floatingActionButton: StatefulBuilder(
+        builder: (_, setCurrentState) {
+          return FloatingActionButton(
+            child: Icon(
+              _videoPlayerController.value.isPlaying
+                  ? Icons.pause
+                  : Icons.play_arrow,
+            ),
+            onPressed: () {
+              if (_videoPlayerController.value.isPlaying) {
+                _videoPlayerController.pause();
+              } else {
+                _videoPlayerController.play();
+              }
+              setCurrentState(() {});
+            },
+          );
+        },
       ),
     );
   }
