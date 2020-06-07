@@ -1,10 +1,12 @@
 import 'dart:io';
-
 // import 'package:chewie/chewie.dart';
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:typeweight/typeweight.dart';
 import 'package:video_player/video_player.dart';
+
+import 'package:hlsd/components/action_button.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   final String path;
@@ -54,9 +56,17 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       appBar: AppBar(
         title: Text(
           'Video Player',
-          style: GoogleFonts.workSans(
+          style: GoogleFonts.ubuntuMono(
             fontWeight: TypeWeight.bold,
           ),
+        ),
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        leading: ActionButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: Icon(Icons.arrow_back),
         ),
       ),
       body: Center(

@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:hlsd/database/database.dart';
 
 import 'pages/pages.dart';
 
@@ -14,31 +14,29 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  const downloads = 'downloads';
-
-  await Hive.initFlutter();
-  await Hive.openBox<String>(downloads);
-
   runApp(Mainframe());
 }
 
 class Mainframe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'HLS Downloader',
-      theme: ThemeData(
-        fontFamily: GoogleFonts.workSans().fontFamily,
-        primaryColor: Colors.black,
-        accentColor: Colors.black,
-        splashFactory: InkRipple.splashFactory,
+    return Provider(
+      create: (_) => AppDatabase(),
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'HLS Downloader',
+        theme: ThemeData(
+          fontFamily: GoogleFonts.ubuntuMono().fontFamily,
+          primaryColor: Colors.indigo,
+          accentColor: Colors.indigoAccent,
+          splashFactory: InkRipple.splashFactory,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (_) => DownloadsPage(),
+          '/download': (_) => DownloadPage(),
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (_) => DownloadsPage(),
-        '/download': (_) => DownloadPage(),
-      },
     );
   }
 }

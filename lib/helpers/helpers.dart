@@ -35,6 +35,16 @@ String normalizeUrl(String url) {
   return dir;
 }
 
+String stripFilePath(String url) {
+  final uri = Uri.parse(url);
+  final dir = p.join(
+    uri.host,
+    uri.pathSegments.sublist(0, uri.pathSegments.length - 1).join('/'),
+  );
+
+  return '${uri.scheme}://' + dir;
+}
+
 /// takes a [url] and returns last file path
 ///
 /// for example, https://abc.com/a/b/c.m3u8
@@ -97,7 +107,7 @@ Future<List<Segment>> getHlsMediaFiles(Uri uri, List<String> lines) async {
 }
 
 /// download file from [url] and returns downloaded file path
-Future<String> load(String url) async {
+Future<String> load(String url, Function(int) progress) async {
   // the url path without file
   // final filedir = normalizeUrl(url);
 
@@ -127,7 +137,15 @@ Future<String> load(String url) async {
   final lines = await file.readAsLines();
   final mediaSegments = await getHlsMediaFiles(Uri.parse(file.path), lines);
 
-  for (var seg in mediaSegments) {
+  final total = mediaSegments.length;
+  var currentProgress = 0;
+
+  print(total);
+
+  for (final entry in mediaSegments.asMap().entries) {
+    final index = entry.key;
+    final seg = entry.value;
+
     // internet url to download from
     final urlToDownload = p.join(
       pathSegments(url).join('/'),
@@ -142,6 +160,15 @@ Future<String> load(String url) async {
 
     if (!await ff.exists()) {
       await downloadFile(urlToDownload, downloadDir.path, seg.url);
+    }
+
+    if (index != total - 1) {
+      // if not last
+      currentProgress += ((1 / total) * 100).round();
+      await progress(currentProgress);
+    } else {
+      currentProgress += (100 - currentProgress);
+      await progress(currentProgress);
     }
   }
 

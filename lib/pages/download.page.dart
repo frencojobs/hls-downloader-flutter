@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:typeweight/typeweight.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:hlsd/helpers/helpers.dart';
+import 'package:hlsd/database/database.dart';
+import 'package:hlsd/helpers/download_queue.dart';
+import 'package:hlsd/components/action_button.dart';
 
 class DownloadPage extends StatefulWidget {
   @override
@@ -15,14 +18,12 @@ class _DownloadPageState extends State<DownloadPage> {
   TextEditingController _controller;
   FocusNode _focusNode;
   bool isDownloading = false;
-  Box<String> downloads;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _focusNode = FocusNode();
-    downloads = Hive.box('downloads');
   }
 
   @override
@@ -34,6 +35,7 @@ class _DownloadPageState extends State<DownloadPage> {
 
   @override
   Widget build(BuildContext context) {
+    final db = Provider.of<AppDatabase>(context);
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -43,9 +45,17 @@ class _DownloadPageState extends State<DownloadPage> {
               appBar: AppBar(
                 title: Text(
                   'Download New',
-                  style: GoogleFonts.workSans(
+                  style: GoogleFonts.ubuntuMono(
                     fontWeight: TypeWeight.bold,
                   ),
+                ),
+                automaticallyImplyLeading: false,
+                titleSpacing: 0,
+                leading: ActionButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  icon: Icon(Icons.arrow_back),
                 ),
               ),
               body: Padding(
@@ -66,34 +76,28 @@ class _DownloadPageState extends State<DownloadPage> {
                       child: RaisedButton(
                         elevation: 0,
                         onPressed: () async {
-                          if (!downloads.values.contains(_controller.text)) {
-                            setState(() {
-                              isDownloading = true;
-                            });
+                          final url = _controller.text;
+                          var currentRecord = (await db.getAllRecord())
+                              .where((r) => r.url == url);
 
-                            var fileLocation;
+                          if (currentRecord.isEmpty) {
+                            int id = await db.insertNewRecord(
+                              Record(url: url, downloaded: 0),
+                            );
 
-                            try {
-                              fileLocation = await load(_controller.text);
-                            } catch (e) {
-                              print('Error:');
-                              print(e);
-                            }
-
-                            if (fileLocation != null) {
-                              await downloads.add(_controller.text);
-                            }
-
-                            setState(() {
-                              isDownloading = false;
+                            DownloadQueue.add(() async {
+                              await load(url, (progress) async {
+                                await db.updateRecord(
+                                  Record(id: id, downloaded: progress),
+                                );
+                              });
                             });
                           }
-
                           Get.back();
                         },
                         child: Text(
                           'Download',
-                          style: GoogleFonts.workSans(
+                          style: GoogleFonts.ubuntuMono(
                             fontWeight: TypeWeight.bold,
                           ),
                         ),
