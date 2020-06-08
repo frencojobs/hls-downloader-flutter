@@ -78,6 +78,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
                 );
               } else {
                 final dls = snapshot.data;
+
                 return ListView.builder(
                   itemCount: dls.length,
                   itemBuilder: (context, index) {
@@ -92,7 +93,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
                         ),
                       ),
                       child: ListTile(
-                        enabled: record.downloaded == 100,
+                        enabled: record.downloaded >= 100,
                         onTap: () async {
                           final loc = await findFileLocation(record.url);
 
@@ -131,7 +132,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
                           ],
                         ),
                         trailing: Visibility(
-                          visible: record.downloaded == 100,
+                          visible: record.downloaded >= 100,
                           child: ActionButton(
                             icon: Icon(Icons.delete),
                             onPressed: () async {

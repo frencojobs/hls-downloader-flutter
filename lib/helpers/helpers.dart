@@ -5,18 +5,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_hls_parser/flutter_hls_parser.dart';
 
 /// returns downloaded file path from url
-
 Future<String> findFileLocation(String url) async {
   final hash = url.hashCode.toString();
   final filePath = getFilePath(url);
   final appDocDir = await getApplicationDocumentsDirectory();
-
-  // await for (var dir in appDocDir.list(recursive: true)) {
-  //   print(dir.absolute.path);
-  // }
-
   final file = File(p.join(appDocDir.path, hash, filePath));
-
   return file.absolute.path;
 }
 
@@ -41,7 +34,6 @@ String stripFilePath(String url) {
     uri.host,
     uri.pathSegments.sublist(0, uri.pathSegments.length - 1).join('/'),
   );
-
   return '${uri.scheme}://' + dir;
 }
 
@@ -61,7 +53,6 @@ String getFilePath(String url) {
 /// for example `a/b/c.m3u8` to `[a, b]`
 List<String> pathSegments(String url) {
   final segments = url.split('/');
-
   return segments.sublist(0, segments.length - 1);
 }
 
@@ -74,7 +65,6 @@ Future<File> downloadFile(String url, String filepath, String filename) async {
 
   for (final f in pathSegments(filename)) {
     final d = Directory(p.join(filepath, f));
-
     if (!await d.exists()) {
       await d.create();
     }
@@ -95,22 +85,43 @@ Future<List<Segment>> getHlsMediaFiles(Uri uri, List<String> lines) async {
 
   if (playList is HlsMediaPlaylist) {
     print('MEDIA Playlist');
-
     return playList.segments;
-  } else if (playList is HlsMasterPlaylist) {
-    print('MASTER Playlist');
-
-    return [];
   } else {
     return [];
   }
 }
 
+Future<Map> loadFileMetadata(String url) async {
+  final uri = Uri.parse(url);
+  final client = http.Client();
+  final req = await client.get(url);
+  final lines = req.body;
+
+  var playList;
+
+  try {
+    playList = await HlsPlaylistParser.create().parseString(uri, lines);
+  } on ParserException catch (_) {
+    print('Unable to parse HLS playlist');
+  }
+
+  if (playList is HlsMediaPlaylist) {
+    return {'default': url};
+  } else if (playList is HlsMasterPlaylist) {
+    final result = {};
+
+    for (final p in playList.variants) {
+      result['${p.format.height} x ${p.format.width}'] = p.url.toString();
+    }
+
+    return result;
+  } else {
+    throw 'Unable to recognize HLS playlist type';
+  }
+}
+
 /// download file from [url] and returns downloaded file path
 Future<String> load(String url, Function(int) progress) async {
-  // the url path without file
-  // final filedir = normalizeUrl(url);
-
   // the file path without full url
   final filename = getFilePath(url);
 
@@ -167,7 +178,7 @@ Future<String> load(String url, Function(int) progress) async {
       currentProgress += ((1 / total) * 100).round();
       await progress(currentProgress);
     } else {
-      currentProgress += (100 - currentProgress);
+      currentProgress = 100;
       await progress(currentProgress);
     }
   }
