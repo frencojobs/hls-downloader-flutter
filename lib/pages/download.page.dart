@@ -137,24 +137,6 @@ class _DownloadPageState extends State<DownloadPage> {
                                 } catch (e) {
                                   print(e);
                                 }
-
-                                // var currentRecord = (await db.getAllRecord())
-                                //     .where((r) => r.url == url);
-
-                                // if (currentRecord.isEmpty) {
-                                //   int id = await db.insertNewRecord(
-                                //     Record(url: url, downloaded: 0),
-                                //   );
-
-                                //   DownloadQueue.add(() async {
-                                //     await load(url, (progress) async {
-                                //       await db.updateRecord(
-                                //         Record(id: id, downloaded: progress),
-                                //       );
-                                //     });
-                                //   });
-                                // }
-                                // Get.back();
                               },
                               child: Text(
                                 'Load Metadata',

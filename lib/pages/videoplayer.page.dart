@@ -1,5 +1,4 @@
 import 'dart:io';
-// import 'package:chewie/chewie.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,19 +18,12 @@ class VideoPlayerPage extends StatefulWidget {
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   VideoPlayerController _videoPlayerController;
-  // ChewieController _chewieController;
   Future<void> _future;
 
   Future<void> initVideoPlayer() async {
     await _videoPlayerController.initialize();
     setState(() {
       print(_videoPlayerController.value.aspectRatio);
-      // _chewieController = ChewieController(
-      //   videoPlayerController: _videoPlayerController,
-      //   aspectRatio: _videoPlayerController.value.aspectRatio,
-      //   autoPlay: false,
-      //   looping: false,
-      // );
     });
   }
 
@@ -46,7 +38,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   void dispose() {
     _videoPlayerController.dispose();
-    // _chewieController.dispose();
     super.dispose();
   }
 
@@ -106,60 +97,3 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 }
-
-// class VideoPlayerPage extends StatefulWidget {
-//   final String path;
-//   VideoPlayerPage(this.path);
-
-//   @override
-//   _VideoPlayerPageState createState() => _VideoPlayerPageState();
-// }
-
-// class _VideoPlayerPageState extends State<VideoPlayerPage> {
-//   VideoPlayerController _controller;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _controller = VideoPlayerController.file(File(widget.path))
-//       ..initialize().then((_) {
-//         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-//         setState(() {});
-//       });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Video'),
-//       ),
-//       body: Center(
-//         child: _controller.value.initialized
-//             ? AspectRatio(
-//                 aspectRatio: _controller.value.aspectRatio,
-//                 child: VideoPlayer(_controller),
-//               )
-//             : Container(),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           setState(() {
-//             _controller.value.isPlaying
-//                 ? _controller.pause()
-//                 : _controller.play();
-//           });
-//         },
-//         child: Icon(
-//           _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     _controller.dispose();
-//   }
-// }
