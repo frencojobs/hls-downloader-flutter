@@ -118,7 +118,7 @@ class _DownloadsPageState extends State<DownloadsPage> {
                                 height: NavigationToolbar.kMiddleSpacing / 2),
                             (record.downloaded < 100)
                                 ? Text(
-                                    'Downloading...${record.downloaded}%',
+                                    'Downloading...${record.downloaded.toStringAsFixed(1)}%',
                                     style: GoogleFonts.ubuntuMono(
                                       color: Colors.indigoAccent,
                                     ),

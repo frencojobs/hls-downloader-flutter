@@ -10,18 +10,19 @@ part of 'database.dart';
 class Record extends DataClass implements Insertable<Record> {
   final int id;
   final String url;
-  final int downloaded;
+  final double downloaded;
   Record({@required this.id, @required this.url, @required this.downloaded});
   factory Record.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final doubleType = db.typeSystem.forDartType<double>();
     return Record(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       url: stringType.mapFromDatabaseResponse(data['${effectivePrefix}url']),
-      downloaded:
-          intType.mapFromDatabaseResponse(data['${effectivePrefix}downloaded']),
+      downloaded: doubleType
+          .mapFromDatabaseResponse(data['${effectivePrefix}downloaded']),
     );
   }
   @override
@@ -34,7 +35,7 @@ class Record extends DataClass implements Insertable<Record> {
       map['url'] = Variable<String>(url);
     }
     if (!nullToAbsent || downloaded != null) {
-      map['downloaded'] = Variable<int>(downloaded);
+      map['downloaded'] = Variable<double>(downloaded);
     }
     return map;
   }
@@ -55,7 +56,7 @@ class Record extends DataClass implements Insertable<Record> {
     return Record(
       id: serializer.fromJson<int>(json['id']),
       url: serializer.fromJson<String>(json['url']),
-      downloaded: serializer.fromJson<int>(json['downloaded']),
+      downloaded: serializer.fromJson<double>(json['downloaded']),
     );
   }
   @override
@@ -64,11 +65,11 @@ class Record extends DataClass implements Insertable<Record> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'url': serializer.toJson<String>(url),
-      'downloaded': serializer.toJson<int>(downloaded),
+      'downloaded': serializer.toJson<double>(downloaded),
     };
   }
 
-  Record copyWith({int id, String url, int downloaded}) => Record(
+  Record copyWith({int id, String url, double downloaded}) => Record(
         id: id ?? this.id,
         url: url ?? this.url,
         downloaded: downloaded ?? this.downloaded,
@@ -98,7 +99,7 @@ class Record extends DataClass implements Insertable<Record> {
 class RecordsCompanion extends UpdateCompanion<Record> {
   final Value<int> id;
   final Value<String> url;
-  final Value<int> downloaded;
+  final Value<double> downloaded;
   const RecordsCompanion({
     this.id = const Value.absent(),
     this.url = const Value.absent(),
@@ -107,13 +108,13 @@ class RecordsCompanion extends UpdateCompanion<Record> {
   RecordsCompanion.insert({
     this.id = const Value.absent(),
     @required String url,
-    @required int downloaded,
+    @required double downloaded,
   })  : url = Value(url),
         downloaded = Value(downloaded);
   static Insertable<Record> custom({
     Expression<int> id,
     Expression<String> url,
-    Expression<int> downloaded,
+    Expression<double> downloaded,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -123,7 +124,7 @@ class RecordsCompanion extends UpdateCompanion<Record> {
   }
 
   RecordsCompanion copyWith(
-      {Value<int> id, Value<String> url, Value<int> downloaded}) {
+      {Value<int> id, Value<String> url, Value<double> downloaded}) {
     return RecordsCompanion(
       id: id ?? this.id,
       url: url ?? this.url,
@@ -141,7 +142,7 @@ class RecordsCompanion extends UpdateCompanion<Record> {
       map['url'] = Variable<String>(url.value);
     }
     if (downloaded.present) {
-      map['downloaded'] = Variable<int>(downloaded.value);
+      map['downloaded'] = Variable<double>(downloaded.value);
     }
     return map;
   }
@@ -173,11 +174,11 @@ class $RecordsTable extends Records with TableInfo<$RecordsTable, Record> {
   }
 
   final VerificationMeta _downloadedMeta = const VerificationMeta('downloaded');
-  GeneratedIntColumn _downloaded;
+  GeneratedRealColumn _downloaded;
   @override
-  GeneratedIntColumn get downloaded => _downloaded ??= _constructDownloaded();
-  GeneratedIntColumn _constructDownloaded() {
-    return GeneratedIntColumn(
+  GeneratedRealColumn get downloaded => _downloaded ??= _constructDownloaded();
+  GeneratedRealColumn _constructDownloaded() {
+    return GeneratedRealColumn(
       'downloaded',
       $tableName,
       false,

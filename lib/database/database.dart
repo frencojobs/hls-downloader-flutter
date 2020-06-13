@@ -5,7 +5,7 @@ part 'database.g.dart';
 class Records extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get url => text()();
-  IntColumn get downloaded => integer()();
+  RealColumn get downloaded => real()();
 }
 
 @UseMoor(tables: [Records])

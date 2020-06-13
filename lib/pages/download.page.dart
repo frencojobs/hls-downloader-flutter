@@ -73,7 +73,7 @@ class _DownloadPageState extends State<DownloadPage> {
                       focusNode: _focusNode,
                     ),
                   ),
-                  if (qualities.length > 0)
+                  if (qualities.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.all(
                         NavigationToolbar.kMiddleSpacing,

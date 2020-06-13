@@ -121,7 +121,7 @@ Future<Map> loadFileMetadata(String url) async {
 }
 
 /// download file from [url] and returns downloaded file path
-Future<String> load(String url, Function(int) progress) async {
+Future<String> load(String url, Function(double) progress) async {
   // the file path without full url
   final filename = getFilePath(url);
 
@@ -149,7 +149,7 @@ Future<String> load(String url, Function(int) progress) async {
   final mediaSegments = await getHlsMediaFiles(Uri.parse(file.path), lines);
 
   final total = mediaSegments.length;
-  var currentProgress = 0;
+  var currentProgress = 0.0;
 
   print(total);
 
@@ -175,10 +175,10 @@ Future<String> load(String url, Function(int) progress) async {
 
     if (index != total - 1) {
       // if not last
-      currentProgress += ((1 / total) * 100).round();
+      currentProgress += double.parse(((1 / total) * 100).toStringAsFixed(2));
       await progress(currentProgress);
     } else {
-      currentProgress = 100;
+      currentProgress = 100.0;
       await progress(currentProgress);
     }
   }
