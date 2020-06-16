@@ -69,6 +69,11 @@ Future<File> downloadFile(String url, String filepath, String filename) async {
       await d.create();
     }
   }
+
+  if (!await file.exists()) {
+    await file.create();
+  }
+
   await file.writeAsBytes(bytes);
   return file;
 }
